@@ -952,6 +952,90 @@
   .toast.toast-ok { color: var(--green); border-color: rgba(90,158,111,0.3); }
   .toast.toast-err { color: var(--red); border-color: rgba(196,90,78,0.3); }
 
+
+  /* REWATCH HISTORY */
+  .rewatch-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 0.3rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .rewatch-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .rewatch-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+  .rewatch-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  .rewatch-history-modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .rewatch-list { display: flex; flex-direction: column; gap: 0.4rem; }
+  .rewatch-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text2);
+    padding: 0.4rem 0.6rem;
+    background: var(--bg3);
+    border-radius: var(--radius);
+  }
+  .rewatch-entry-del {
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    transition: color 0.15s;
+    border: none;
+    background: transparent;
+  }
+  .rewatch-entry-del:hover { color: var(--red); }
+  /* sync indicator */
+  .sync-indicator {
+    position: fixed;
+    top: 70px;
+    right: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    z-index: 400;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .sync-indicator.show { opacity: 1; }
+
   /* ── MOBILE ── */
   @media (max-width: 700px) {
     header {
@@ -1317,6 +1401,22 @@
   </div>
 </div>
 
+<!-- REWATCH HISTORY MODAL -->
+<div class="modal-overlay" id="rewatch-overlay">
+  <div class="rewatch-history-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="rewatch-modal-title" style="font-size:1.3rem">История просмотров</div>
+      <button class="modal-close" id="rewatch-close">✕</button>
+    </div>
+    <div class="rewatch-list" id="rewatch-list"></div>
+    <button class="btn btn-accent" id="rewatch-add-btn">+ Отметить пересмотр</button>
+    <button class="btn" id="rewatch-done-btn">Закрыть</button>
+  </div>
+</div>
+
+<!-- SYNC INDICATOR -->
+<div class="sync-indicator" id="sync-indicator">☁ синхронизация...</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1364,6 +1464,8 @@ function s() { return Math.random().toString(36).slice(2,10); }
 function load() {
   try { db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { db = []; }
   if (!db.length) { db = SAMPLES; save(); }
+  // Auto-sync from Gist on startup
+  setTimeout(autoSyncOnLoad, 300);
 }
 
 function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
@@ -1691,6 +1793,87 @@ function updateCounts() {
 }
 
 // RENDER
+// ── REWATCH HISTORY ──────────────────────────────────────────────
+function formatDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+let rewatchItemId = null;
+
+function openRewatchModal(id) {
+  rewatchItemId = id;
+  const item = db.find(x=>x.id===id);
+  if (!item) return;
+  document.getElementById('rewatch-modal-title').textContent = item.title;
+  renderRewatchList(item);
+  document.getElementById('rewatch-overlay').classList.add('open');
+}
+
+function renderRewatchList(item) {
+  const list = document.getElementById('rewatch-list');
+  const rewatches = item.rewatches || [];
+  if (!rewatches.length) {
+    list.innerHTML = '<div style="font-family:Crimson Pro,serif;color:var(--text3);font-style:italic;font-size:0.95rem;">Пересмотров ещё не было</div>';
+    return;
+  }
+  list.innerHTML = rewatches.map((ts, i) => `
+    <div class="rewatch-entry">
+      <span>🔁 Пересмотр ${i+1} — ${formatDate(ts)}</span>
+      <button class="rewatch-entry-del" data-i="${i}" title="Удалить">✕</button>
+    </div>
+  `).join('');
+  list.querySelectorAll('.rewatch-entry-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      item.rewatches.splice(parseInt(btn.dataset.i), 1);
+      save(); autoSyncDebounced();
+      renderRewatchList(item);
+      render();
+    });
+  });
+}
+
+// ── AUTO SYNC ────────────────────────────────────────────────────
+let autoSyncTimer = null;
+function autoSyncDebounced() {
+  if (!githubToken || !gistId) return;
+  clearTimeout(autoSyncTimer);
+  const ind = document.getElementById('sync-indicator');
+  ind.textContent = '☁ сохранение...';
+  ind.classList.add('show');
+  autoSyncTimer = setTimeout(async () => {
+    await gistPush(true); // silent=true
+    ind.textContent = '✓ сохранено';
+    setTimeout(() => ind.classList.remove('show'), 2000);
+  }, 1500);
+}
+
+async function autoSyncOnLoad() {
+  if (!githubToken || !gistId) return;
+  const ind = document.getElementById('sync-indicator');
+  ind.textContent = '☁ загрузка...';
+  ind.classList.add('show');
+  try {
+    const r = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${githubToken}` }
+    });
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    const file = data.files && data.files['filmoteka.json'];
+    if (!file) throw new Error('no file');
+    const parsed = JSON.parse(file.content);
+    if (!Array.isArray(parsed)) throw new Error('bad format');
+    db = parsed;
+    save();
+    render();
+    ind.textContent = '✓ синхронизировано';
+  } catch(e) {
+    ind.textContent = '✗ нет связи';
+  }
+  setTimeout(() => ind.classList.remove('show'), 2500);
+}
+
 function render() {
   updateCounts();
   updateGenreFilter();
@@ -1778,9 +1961,18 @@ function render() {
       star.addEventListener('click', e => {
         e.stopPropagation();
         const it = db.find(x=>x.id===star.dataset.id);
-        if (it) { it.rating = parseInt(star.dataset.v); save(); render(); }
+        if (it) { it.rating = parseInt(star.dataset.v); save(); autoSyncDebounced(); render(); }
       });
     });
+
+    // Rewatch button
+    const rwBtn = card.querySelector('.rewatch-btn');
+    if (rwBtn) {
+      rwBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        openRewatchModal(rwBtn.dataset.id);
+      });
+    }
 
     grid.appendChild(card);
   });
@@ -1881,14 +2073,14 @@ function saveItem() {
   } else {
     db.unshift({ id: s(), fav: false, added: Date.now(), ...data });
   }
-  save(); closeModal(); render();
+  save(); closeModal(); render(); autoSyncDebounced();
 }
 
 function deleteItem() {
   if (!editingId) return;
   if (!confirm('Удалить «' + (db.find(x=>x.id===editingId)||{}).title + '»?')) return;
   db = db.filter(x=>x.id!==editingId);
-  save(); closeModal(); render();
+  save(); closeModal(); render(); autoSyncDebounced();
 }
 
 // ── EXPORT FOR VIEWING ────────────────────────────────────────────
@@ -1994,8 +2186,8 @@ function exportWatched() {
 }
 
 // GIST SYNC
-async function gistPush() {
-  if (!githubToken) { toast("Нет GitHub токена — укажи в настройках", "err"); return; }
+async function gistPush(silent=false) {
+  if (!githubToken) { if(!silent) toast("Нет GitHub токена — укажи в настройках", "err"); return; }
   const statusEl = document.getElementById("gist-status");
   statusEl.className = "gist-status loading";
   statusEl.textContent = "Сохранение...";
@@ -2009,8 +2201,8 @@ async function gistPush() {
     if (!r.ok) throw new Error(r.status);
     const data = await r.json();
     if (!gistId) { gistId = data.id; localStorage.setItem(GIST_ID_STORAGE, gistId); document.getElementById("settings-gist-id").value = gistId; }
-    statusEl.className = "gist-status ok"; statusEl.textContent = "✓ Сохранено"; toast("Данные сохранены в Gist", "ok");
-  } catch(e) { statusEl.className = "gist-status err"; statusEl.textContent = "✗ Ошибка: " + e.message; toast("Ошибка сохранения в Gist", "err"); }
+    statusEl.className = "gist-status ok"; statusEl.textContent = "✓ Сохранено"; if(!silent) toast("Данные сохранены в Gist", "ok");
+  } catch(e) { statusEl.className = "gist-status err"; statusEl.textContent = "✗ Ошибка: " + e.message; if(!silent) toast("Ошибка сохранения в Gist", "err"); }
 }
 async function gistPull() {
   if (!githubToken || !gistId) { toast("Нет токена или Gist ID — укажи в настройках", "err"); return; }
@@ -2247,12 +2439,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Rewatch modal
+  document.getElementById('rewatch-close').addEventListener('click', () => document.getElementById('rewatch-overlay').classList.remove('open'));
+  document.getElementById('rewatch-done-btn').addEventListener('click', () => document.getElementById('rewatch-overlay').classList.remove('open'));
+  document.getElementById('rewatch-add-btn').addEventListener('click', () => {
+    if (!rewatchItemId) return;
+    const item = db.find(x=>x.id===rewatchItemId);
+    if (!item) return;
+    if (!item.rewatches) item.rewatches = [];
+    item.rewatches.push(Date.now());
+    save(); autoSyncDebounced();
+    renderRewatchList(item);
+    render();
+    toast('Пересмотр отмечен!', 'ok');
+  });
+  document.getElementById('rewatch-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('rewatch-overlay')) document.getElementById('rewatch-overlay').classList.remove('open');
+  });
+
   // Keyboard
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeModal();
       document.getElementById('rng-overlay').classList.remove('open');
       document.getElementById('import-overlay').classList.remove('open');
+      document.getElementById('rewatch-overlay').classList.remove('open');
       closeSettings();
     }
   });
