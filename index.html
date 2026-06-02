@@ -1853,7 +1853,7 @@ function autoSyncDebounced() {
 }
 
 async function autoSyncOnLoad() {
-  if (!githubToken || !gistId) return;
+  if (!gistId) return;
   const ind = document.getElementById('sync-indicator');
   ind.textContent = '☁ загрузка...';
   ind.classList.add('show');
@@ -2208,7 +2208,7 @@ async function gistPush(silent=false) {
   } catch(e) { statusEl.className = "gist-status err"; statusEl.textContent = "✗ Ошибка: " + e.message; if(!silent) toast("Ошибка сохранения в Gist", "err"); }
 }
 async function gistPull() {
-  if (!githubToken || !gistId) { toast("Нет токена или Gist ID — укажи в настройках", "err"); return; }
+  if (!gistId) { toast("Нет Gist ID — укажи в настройках", "err"); return; }
   const statusEl = document.getElementById("gist-status");
   statusEl.className = "gist-status loading"; statusEl.textContent = "Загрузка...";
   try {
