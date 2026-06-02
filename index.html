@@ -1463,12 +1463,15 @@ function s() { return Math.random().toString(36).slice(2,10); }
 
 function load() {
   try { db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { db = []; }
-  if (!db.length) { db = SAMPLES; save(); }
+  if (!db.length) { db = SAMPLES; save(true); }
   // Auto-sync from Gist on startup
   setTimeout(autoSyncOnLoad, 300);
 }
 
-function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); }
+function save(skipSync=false) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  if (!skipSync) autoSyncDebounced();
+}
 
 // CAT LABELS
 const CAT_LABELS = {
@@ -1827,7 +1830,7 @@ function renderRewatchList(item) {
   list.querySelectorAll('.rewatch-entry-del').forEach(btn => {
     btn.addEventListener('click', () => {
       item.rewatches.splice(parseInt(btn.dataset.i), 1);
-      save(); autoSyncDebounced();
+      save();
       renderRewatchList(item);
       render();
     });
@@ -1865,7 +1868,7 @@ async function autoSyncOnLoad() {
     const parsed = JSON.parse(file.content);
     if (!Array.isArray(parsed)) throw new Error('bad format');
     db = parsed;
-    save();
+    save(true);
     render();
     ind.textContent = '✓ синхронизировано';
   } catch(e) {
@@ -1961,7 +1964,7 @@ function render() {
       star.addEventListener('click', e => {
         e.stopPropagation();
         const it = db.find(x=>x.id===star.dataset.id);
-        if (it) { it.rating = parseInt(star.dataset.v); save(); autoSyncDebounced(); render(); }
+        if (it) { it.rating = parseInt(star.dataset.v); save(); render(); }
       });
     });
 
@@ -2073,14 +2076,14 @@ function saveItem() {
   } else {
     db.unshift({ id: s(), fav: false, added: Date.now(), ...data });
   }
-  save(); closeModal(); render(); autoSyncDebounced();
+  save(); closeModal(); render();
 }
 
 function deleteItem() {
   if (!editingId) return;
   if (!confirm('Удалить «' + (db.find(x=>x.id===editingId)||{}).title + '»?')) return;
   db = db.filter(x=>x.id!==editingId);
-  save(); closeModal(); render(); autoSyncDebounced();
+  save(); closeModal(); render();
 }
 
 // ── EXPORT FOR VIEWING ────────────────────────────────────────────
@@ -2216,7 +2219,7 @@ async function gistPull() {
     if (!file) throw new Error("Файл не найден в Gist");
     const parsed = JSON.parse(file.content);
     if (!Array.isArray(parsed)) throw new Error("Неверный формат");
-    db = parsed; save(); render();
+    db = parsed; save(true); render();
     statusEl.className = "gist-status ok"; statusEl.textContent = "✓ Загружено"; toast(`Загружено ${db.length} тайтлов из Gist`, "ok");
   } catch(e) { statusEl.className = "gist-status err"; statusEl.textContent = "✗ Ошибка: " + e.message; toast("Ошибка загрузки из Gist", "err"); }
 }
@@ -2448,7 +2451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!item) return;
     if (!item.rewatches) item.rewatches = [];
     item.rewatches.push(Date.now());
-    save(); autoSyncDebounced();
+    save();
     renderRewatchList(item);
     render();
     toast('Пересмотр отмечен!', 'ok');
