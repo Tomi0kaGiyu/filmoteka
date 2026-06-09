@@ -1,0 +1,3060 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>МОЯ ФИЛЬМОТЕКА</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --bg2: #131316;
+    --bg3: #1a1a1f;
+    --bg4: #222228;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8e6e0;
+    --text2: #8a8880;
+    --text3: #555350;
+    --accent: #e8c87a;
+    --accent2: #c4a24e;
+    --red: #c45a4e;
+    --green: #5a9e6f;
+    --blue: #4e7ec4;
+    --purple: #9e6fc4;
+    --orange: #c4845a;
+    --radius: 6px;
+    --radius-lg: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Bebas Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .logo span { color: var(--text3); }
+
+  nav {
+    display: flex;
+    gap: 0;
+    flex: 1;
+  }
+
+  .tab-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0 1.2rem;
+    height: 60px;
+    border: none;
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .tab-btn:hover { color: var(--text2); }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .header-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-left: auto;
+  }
+
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn:hover { background: var(--bg3); color: var(--text); border-color: var(--border2); }
+
+  .btn-accent {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    font-weight: 500;
+  }
+
+  .btn-accent:hover { background: var(--accent2); border-color: var(--accent2); color: var(--bg); }
+
+  /* MAIN LAYOUT */
+  main { display: flex; height: calc(100vh - 60px); }
+
+  /* SIDEBAR */
+  aside {
+    width: 220px;
+    min-width: 220px;
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    overflow-y: auto;
+  }
+
+  .sidebar-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0.8rem 0.5rem 0.3rem;
+  }
+
+  .sidebar-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--radius);
+    border: none;
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .sidebar-btn:hover { background: var(--bg3); color: var(--text); }
+  .sidebar-btn.active { background: var(--bg3); color: var(--accent); }
+
+  .sidebar-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    background: var(--bg4);
+    padding: 0.1rem 0.4rem;
+    border-radius: 20px;
+  }
+
+  /* CONTENT */
+  .content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 160px;
+    max-width: 280px;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    padding: 0.4rem 0.7rem 0.4rem 2rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus { border-color: var(--border2); }
+  .search-wrap input::placeholder { color: var(--text3); }
+
+  .search-icon {
+    position: absolute;
+    left: 0.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text3);
+    font-size: 0.8rem;
+    pointer-events: none;
+  }
+
+  select {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    padding: 0.4rem 0.7rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text2);
+    outline: none;
+    cursor: pointer;
+  }
+
+  select:focus { border-color: var(--border2); }
+  option { background: var(--bg3); }
+
+  /* STATS */
+  .stats-bar {
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .stat-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .stat-item strong {
+    color: var(--text2);
+    font-weight: 500;
+  }
+
+  /* GRID */
+  .grid-wrap {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.5rem;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all 0.2s;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .card-poster {
+    width: 100%;
+    aspect-ratio: 2/3;
+    background: var(--bg4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    color: var(--text3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-poster img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.05em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .badge-watched { background: rgba(90,158,111,0.85); color: #c8ffd8; }
+  .badge-watching { background: rgba(78,126,196,0.85); color: #c8ddff; }
+  .badge-dropped { background: rgba(196,90,78,0.85); color: #ffd8c8; }
+  .badge-planned { background: rgba(90,90,100,0.85); color: #d0d0d8; }
+
+  .card-fav {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 2;
+  }
+
+  .card-fav:hover { background: rgba(0,0,0,0.7); }
+  .card-fav.active { color: var(--accent); }
+
+  .card-body {
+    padding: 0.75rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .card-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text3);
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .card-genres {
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin-top: 0.2rem;
+  }
+
+  .genre-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
+    background: var(--bg4);
+    color: var(--text3);
+    border: 1px solid var(--border);
+  }
+
+  .card-rating {
+    display: flex;
+    gap: 2px;
+    margin-top: 0.2rem;
+    align-items: center;
+  }
+
+  .star {
+    font-size: 0.8rem;
+    cursor: pointer;
+    color: var(--text3);
+    transition: color 0.1s;
+    line-height: 1;
+  }
+
+  .star.lit { color: var(--accent); }
+  .star:hover { color: var(--accent); }
+
+  /* PROGRESS BAR */
+  .card-progress {
+    margin-top: 0.4rem;
+  }
+
+  .progress-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    margin-bottom: 0.25rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--bg4);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  .progress-fill.done { background: var(--green); }
+  .progress-fill.dropped { background: var(--red); }
+
+  .prog-pill {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    background: var(--bg4);
+    color: var(--text3);
+    white-space: nowrap;
+  }
+  .prog-pill.accent {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    color: var(--accent);
+  }
+  .prog-pill.green {
+    background: color-mix(in srgb, var(--green) 15%, transparent);
+    color: var(--green);
+  }
+  .prog-pill.red {
+    background: color-mix(in srgb, var(--red) 15%, transparent);
+    color: var(--red);
+  }
+  .prog-pills {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 0.3rem;
+    flex-wrap: wrap;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 580px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.06em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .modal-close {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border2);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .modal-close:hover { background: var(--bg4); color: var(--text); }
+
+  .field-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  .field label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    padding: 0.45rem 0.7rem;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus { border-color: var(--accent); }
+
+  .field textarea { resize: vertical; min-height: 80px; }
+
+  .modal-rating {
+    display: flex;
+    gap: 4px;
+  }
+
+  .modal-star {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text3);
+    transition: color 0.1s;
+  }
+
+  .modal-star.lit { color: var(--accent); }
+  .modal-star:hover { color: var(--accent); }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: flex-end;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-danger {
+    color: var(--red);
+    border-color: rgba(196,90,78,0.3);
+  }
+
+  .btn-danger:hover { background: rgba(196,90,78,0.1); }
+
+  /* STATUS PILLS */
+  .status-select {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .status-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .status-pill:hover { border-color: var(--border2); color: var(--text2); }
+  .status-pill[data-status="watched"].active { background: rgba(90,158,111,0.2); border-color: var(--green); color: #8fcca0; }
+  .status-pill[data-status="watching"].active { background: rgba(78,126,196,0.2); border-color: var(--blue); color: #8fb5e0; }
+  .status-pill[data-status="dropped"].active { background: rgba(196,90,78,0.2); border-color: var(--red); color: #e0907f; }
+  .status-pill[data-status="planned"].active { background: rgba(100,100,120,0.2); border-color: #666; color: #aaa; }
+
+  /* PROGRESS SECTION */
+  .progress-section {
+    background: var(--bg3);
+    border-radius: var(--radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .progress-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.2rem;
+  }
+
+  .progress-row {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+  }
+
+  .progress-row label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--text3);
+    width: 80px;
+    flex-shrink: 0;
+  }
+
+  .progress-row input {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.5rem;
+    width: 70px;
+    background: var(--bg4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    outline: none;
+    text-align: center;
+  }
+
+  .modal-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: var(--bg4);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 0.3rem;
+  }
+
+  .modal-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent);
+    transition: width 0.4s;
+  }
+
+  .modal-progress-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-align: right;
+  }
+
+  /* RANDOMIZER */
+  .randomizer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .randomizer-overlay.open { opacity: 1; pointer-events: all; }
+
+  .randomizer-card {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    max-width: 420px;
+    width: 90%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: center;
+    position: relative;
+  }
+
+  .randomizer-dice {
+    font-size: 3rem;
+    animation: spin 0.5s ease-out;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg) scale(0.5); opacity: 0; }
+    60% { transform: rotate(380deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); opacity: 1; }
+  }
+
+  .randomizer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+  }
+
+  .randomizer-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+    line-height: 1.1;
+  }
+
+  .randomizer-meta {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--text2);
+    font-style: italic;
+  }
+
+  .randomizer-actions {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  /* EMPTY STATE */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    color: var(--text3);
+    text-align: center;
+  }
+
+  .empty-icon { font-size: 3rem; }
+
+  .empty-state h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    letter-spacing: 0.06em;
+    color: var(--text2);
+  }
+
+  .empty-state p {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--text3);
+    font-style: italic;
+  }
+
+  /* GENRE FILTER PILLS */
+  .genre-filter-row {
+    padding: 0.5rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    overflow-x: auto;
+  }
+
+  .genre-filter-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .genre-filter-pill:hover { border-color: var(--border2); color: var(--text2); }
+  .genre-filter-pill.active { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  .text-accent { color: var(--accent); }
+  .text-muted { color: var(--text3); font-style: italic; }
+
+  .genres-input-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text3);
+    margin-top: 0.2rem;
+  }
+
+  /* TMDB lookup button + spinner inside title field */
+  .title-wrap { position: relative; display: flex; gap: 0.4rem; align-items: center; }
+  .title-wrap input { flex: 1; }
+
+  /* TMDB PICKER */
+  .tmdb-picker {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    min-width: 280px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    z-index: 999;
+    max-height: 320px;
+    overflow-y: auto;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  .tmdb-picker.open { display: block; }
+  .tmdb-picker-item {
+    display: flex;
+    gap: 0.7rem;
+    align-items: center;
+    padding: 0.5rem 0.7rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .tmdb-picker-item:last-child { border-bottom: none; }
+  .tmdb-picker-item:hover { background: var(--bg4); }
+  .tmdb-picker-thumb {
+    width: 36px;
+    height: 54px;
+    object-fit: cover;
+    border-radius: 3px;
+    background: var(--bg4);
+    flex-shrink: 0;
+  }
+  .tmdb-picker-thumb-placeholder {
+    width: 36px;
+    height: 54px;
+    border-radius: 3px;
+    background: var(--bg4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .tmdb-picker-info { flex: 1; min-width: 0; }
+  .tmdb-picker-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tmdb-picker-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .tmdb-picker-rating {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+  .title-wrap { position: relative; }
+
+  .tmdb-lookup-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.45rem 0.7rem;
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    color: var(--text2);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .tmdb-lookup-btn:hover { background: var(--bg3); color: var(--text); }
+  .tmdb-lookup-btn:disabled { opacity: 0.4; cursor: default; }
+  .tmdb-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    min-height: 1rem;
+  }
+  .tmdb-status.ok { color: var(--green); }
+  .tmdb-status.err { color: var(--red); }
+
+  /* IMPORT MODAL */
+  .import-modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 500px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .import-drop {
+    border: 2px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    color: var(--text3);
+  }
+  .import-drop:hover, .import-drop.drag { border-color: var(--accent); color: var(--text2); }
+  .import-drop input[type=file] { display: none; }
+  .import-log {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+    background: var(--bg3);
+    border-radius: var(--radius);
+    padding: 0.7rem;
+    max-height: 160px;
+    overflow-y: auto;
+    line-height: 1.6;
+    display: none;
+  }
+  .import-log.show { display: block; }
+  .import-log .ok { color: var(--green); }
+  .import-log .warn { color: var(--accent); }
+  .import-log .err { color: var(--red); }
+
+  /* SETTINGS MODAL */
+  .settings-modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* SETTINGS SECTIONS */
+  .settings-section {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .settings-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 0.2rem;
+  }
+  .settings-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .gist-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text3);
+  }
+  .gist-status.ok { color: var(--green); }
+  .gist-status.err { color: var(--red); }
+  .gist-status.loading { color: var(--accent); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(60px);
+    background: var(--bg4);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 0.55rem 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text2);
+    z-index: 500;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.toast-ok { color: var(--green); border-color: rgba(90,158,111,0.3); }
+  .toast.toast-err { color: var(--red); border-color: rgba(196,90,78,0.3); }
+
+
+
+  /* GENRE TOOLTIP */
+  .genre-tooltip-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .genre-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--text3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: default;
+    border-bottom: 1px dashed var(--border2);
+    padding-bottom: 1px;
+    transition: color 0.15s;
+  }
+  .genre-tooltip-wrap:hover .genre-label { color: var(--accent); }
+  .genre-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 0.4rem 0.5rem;
+    z-index: 100;
+    min-width: 120px;
+    max-width: 200px;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .genre-tooltip-wrap:hover .genre-tooltip { display: flex; }
+
+  /* REWATCH HISTORY */
+  .rewatch-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 0.3rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .rewatch-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .rewatch-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+  }
+  .rewatch-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  .rewatch-history-modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 400px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .rewatch-list { display: flex; flex-direction: column; gap: 0.4rem; }
+  .rewatch-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text2);
+    padding: 0.4rem 0.6rem;
+    background: var(--bg3);
+    border-radius: var(--radius);
+  }
+  .rewatch-entry-del {
+    color: var(--text3);
+    cursor: pointer;
+    font-size: 0.7rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    transition: color 0.15s;
+    border: none;
+    background: transparent;
+  }
+  .rewatch-entry-del:hover { color: var(--red); }
+
+
+  /* ── CUSTOM DATEPICKER ── */
+  .datepicker-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .datepicker-trigger {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.2rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.15s;
+  }
+  .datepicker-trigger:hover { border-bottom-color: var(--accent); color: var(--accent); }
+  .datepicker-popup {
+    position: fixed;
+    z-index: 9999;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    width: 240px;
+    user-select: none;
+  }
+  .dp-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.7rem;
+  }
+  .dp-month-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    cursor: pointer;
+  }
+  .dp-nav {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text2);
+    border-radius: 4px;
+    width: 24px; height: 24px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .dp-nav:hover { border-color: var(--accent); color: var(--accent); }
+  .dp-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    margin-bottom: 4px;
+  }
+  .dp-weekday {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--text3);
+    text-align: center;
+    padding: 2px 0;
+    letter-spacing: 0.05em;
+  }
+  .dp-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+  }
+  .dp-day {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text2);
+    text-align: center;
+    padding: 5px 2px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.12s;
+    border: 1px solid transparent;
+  }
+  .dp-day:hover { background: var(--bg4); color: var(--accent); border-color: var(--border); }
+  .dp-day.today { border-color: var(--border2); color: var(--text1); }
+  .dp-day.selected { background: var(--accent); color: var(--bg); font-weight: 700; }
+  .dp-day.other-month { color: var(--text3); opacity: 0.4; }
+  .dp-day.empty { cursor: default; }
+  .dp-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.6rem;
+    gap: 0.4rem;
+  }
+  .dp-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .dp-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .dp-btn.accent { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+  .rewatch-nodate {
+    color: var(--text3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    flex: 1;
+    font-style: italic;
+  }
+  /* sync indicator */
+  .sync-indicator {
+    position: fixed;
+    top: 70px;
+    right: 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--text3);
+    z-index: 400;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .sync-indicator.show { opacity: 1; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 700px) {
+    header {
+      padding: 0.4rem 1rem 0;
+      gap: 0.5rem;
+      height: auto;
+      flex-wrap: wrap;
+    }
+    .logo { font-size: 1.25rem; padding: 0.3rem 0; }
+    nav {
+      order: 10;
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    nav::-webkit-scrollbar { display: none; }
+    .tab-btn { height: 40px; font-size: 0.62rem; padding: 0 0.8rem; flex-shrink: 0; }
+    .header-actions { gap: 0.3rem; margin-left: auto; }
+    .btn { font-size: 0.6rem; padding: 0.3rem 0.55rem; }
+    #rng-btn { display: none; }
+    main { flex-direction: column; height: auto; }
+    aside {
+      width: 100%;
+      min-width: 0;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 0;
+      flex-direction: row;
+      flex-wrap: wrap;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    aside.open { max-height: 200px; padding: 0.6rem 0.8rem; gap: 0.4rem; }
+    .sidebar-label { display: none; }
+    .sidebar-btn {
+      flex: 0 0 auto;
+      font-size: 0.8rem;
+      padding: 0.28rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+    .sidebar-btn.active { background: var(--bg4); border-color: var(--accent); color: var(--accent); }
+    .mobile-status-toggle {
+      display: flex !important;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      color: var(--text2);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      text-align: left;
+    }
+    .mobile-status-toggle .arrow { margin-left: auto; transition: transform 0.3s; }
+    .mobile-status-toggle.open .arrow { transform: rotate(180deg); }
+    .toolbar { padding: 0.6rem 0.8rem; gap: 0.45rem; }
+    .search-wrap { max-width: 100%; flex: 1 1 100%; }
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 0.6rem; }
+    .grid-wrap { padding: 0.7rem; }
+    .stats-bar { padding: 0.35rem 0.8rem; gap: 0.7rem; }
+    .stat-item { font-size: 0.58rem; }
+    .genre-filter-row { padding: 0.35rem 0.8rem; }
+    .modal { max-width: 100%; max-height: 95dvh; padding: 1rem; border-radius: var(--radius); }
+    .modal-overlay { padding: 0.4rem; align-items: flex-end; }
+    .field-group { grid-template-columns: 1fr; }
+    .field.full { grid-column: 1; }
+    .settings-modal { max-width: 100% !important; }
+    .card-title { font-size: 0.88rem; }
+    .card-body { padding: 0.5rem; gap: 0.2rem; }
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Фильм<span>отека</span></div>
+  <nav id="main-tabs">
+    <button class="tab-btn active" data-cat="all">Все</button>
+    <button class="tab-btn" data-cat="film">Фильмы</button>
+    <button class="tab-btn" data-cat="series">Сериалы</button>
+    <button class="tab-btn" data-cat="anime">Аниме</button>
+    <button class="tab-btn" data-cat="cartoon">Мультфильмы</button>
+    <button class="tab-btn" data-cat="cartoon-series">Мультсериалы</button>
+    <button class="tab-btn" data-cat="anime-film">Аниме-фильмы</button>
+    <button class="tab-btn" data-cat="favorites">★ Избранное</button>
+  </nav>
+  <div class="header-actions">
+    <button class="btn" id="rng-btn">🎲 Рандом</button>
+    <button class="btn" id="settings-btn" title="Настройки">⚙</button>
+    <button class="btn btn-accent" id="add-btn">+ Добавить</button>
+  </div>
+</header>
+
+<main>
+  <button class="mobile-status-toggle" id="mobile-status-toggle" style="display:none">
+    <span id="mobile-status-label">Статус: Все</span>
+    <span class="arrow">▾</span>
+  </button>
+<aside id="status-sidebar">
+    <div class="sidebar-label">Статус</div>
+    <button class="sidebar-btn active" data-status="all">Все <span class="sidebar-count" id="cnt-all">0</span></button>
+    <button class="sidebar-btn" data-status="watching">Смотрю <span class="sidebar-count" id="cnt-watching">0</span></button>
+    <button class="sidebar-btn" data-status="watched">Просмотрено <span class="sidebar-count" id="cnt-watched">0</span></button>
+    <button class="sidebar-btn" data-status="planned">Запланировано <span class="sidebar-count" id="cnt-planned">0</span></button>
+    <button class="sidebar-btn" data-status="dropped">Брошено <span class="sidebar-count" id="cnt-dropped">0</span></button>
+  </aside>
+
+  <div class="content">
+    <div class="toolbar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="search-input" placeholder="Поиск...">
+      </div>
+      <select id="sort-select">
+        <option value="added">По дате добавления</option>
+        <option value="title">По алфавиту (А→Я)</option>
+        <option value="title-desc">По алфавиту (Я→А)</option>
+        <option value="year">По году (убыв.)</option>
+        <option value="year-asc">По году (возр.)</option>
+        <option value="rating">По рейтингу</option>
+      </select>
+      <select id="genre-select">
+        <option value="">Все жанры</option>
+      </select>
+    </div>
+
+    <div class="stats-bar" id="stats-bar">
+      <div class="stat-item">Показано: <strong id="stat-shown">0</strong></div>
+      <div class="stat-item">Просмотрено: <strong id="stat-watched">0</strong></div>
+      <div class="stat-item">★ Ср. рейтинг: <strong id="stat-rating">—</strong></div>
+    </div>
+
+    <div class="genre-filter-row" id="genre-filter-row"></div>
+
+    <div class="grid-wrap">
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title-text">Добавить</div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+
+    <div class="field-group">
+      <div class="field full">
+        <label>Название</label>
+        <div class="title-wrap">
+          <input type="text" id="f-title" placeholder="Название произведения">
+          <button class="tmdb-lookup-btn" id="tmdb-lookup-btn" title="Найти в TMDB / AniList">🔍 TMDB</button>
+          <div class="tmdb-picker" id="tmdb-picker"></div>
+        </div>
+        <div class="tmdb-status" id="tmdb-status"></div>
+        <input type="hidden" id="f-poster" value="">
+        <input type="hidden" id="f-tmdb-rating" value="">
+      </div>
+      <div class="field">
+        <label>Категория</label>
+        <select id="f-cat">
+          <option value="film">Фильм</option>
+          <option value="series">Сериал</option>
+          <option value="anime">Аниме (сериал)</option>
+          <option value="anime-film">Аниме-фильм</option>
+          <option value="cartoon">Мультфильм</option>
+          <option value="cartoon-series">Мультсериал</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Год</label>
+        <input type="number" id="f-year" placeholder="2024" min="1900" max="2099">
+      </div>
+      <div class="field full">
+        <label>Жанры (через запятую)</label>
+        <input type="text" id="f-genres" placeholder="Боевик, Триллер, Драма">
+        <div class="genres-input-hint">Например: Боевик, Триллер, Драма</div>
+      </div>
+      <div class="field full">
+        <label>Заметки</label>
+        <textarea id="f-notes" placeholder="Впечатления, цитаты, мысли..."></textarea>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="field">
+      <label>Статус</label>
+      <div class="status-select" id="status-select">
+        <button class="status-pill active" data-status="planned">Запланировано</button>
+        <button class="status-pill" data-status="watching">Смотрю</button>
+        <button class="status-pill" data-status="watched">Просмотрено</button>
+        <button class="status-pill" data-status="dropped">Брошено</button>
+      </div>
+    </div>
+
+    <!-- Rating -->
+    <div class="field">
+      <label>Оценка</label>
+      <div class="modal-rating" id="modal-rating">
+        <span class="modal-star" data-v="1">★</span>
+        <span class="modal-star" data-v="2">★</span>
+        <span class="modal-star" data-v="3">★</span>
+        <span class="modal-star" data-v="4">★</span>
+        <span class="modal-star" data-v="5">★</span>
+        <span class="modal-star" data-v="6">★</span>
+        <span class="modal-star" data-v="7">★</span>
+        <span class="modal-star" data-v="8">★</span>
+        <span class="modal-star" data-v="9">★</span>
+        <span class="modal-star" data-v="10">★</span>
+      </div>
+    </div>
+
+    <!-- Progress section -->
+    <div class="progress-section" id="progress-section">
+      <div class="progress-section-title">📺 Прогресс просмотра</div>
+      <div class="progress-row">
+        <label>Сезонов всего</label>
+        <input type="number" id="f-total-seasons" min="1" placeholder="1">
+      </div>
+      <div class="progress-row">
+        <label>Текущий сезон</label>
+        <input type="number" id="f-cur-season" min="1" placeholder="1">
+      </div>
+      <div class="progress-row">
+        <label>Серий всего</label>
+        <input type="number" id="f-total-eps" min="1" placeholder="12">
+      </div>
+      <div class="progress-row">
+        <label>Просмотрено</label>
+        <input type="number" id="f-cur-ep" min="0" placeholder="0">
+      </div>
+      <div class="modal-progress-bar">
+        <div class="modal-progress-fill" id="modal-progress-fill" style="width:0%"></div>
+      </div>
+      <div class="modal-progress-pct" id="modal-progress-pct">0%</div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-danger" id="delete-btn" style="display:none">Удалить</button>
+      <button class="btn" id="modal-cancel">Отмена</button>
+      <button class="btn btn-accent" id="modal-save">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- RANDOMIZER -->
+<div class="randomizer-overlay" id="rng-overlay">
+  <div class="randomizer-card">
+    <div class="randomizer-dice" id="rng-dice">🎲</div>
+    <div class="randomizer-label" id="rng-cat-label">СЛУЧАЙНЫЙ ВЫБОР</div>
+    <div class="randomizer-title" id="rng-title">—</div>
+    <div class="randomizer-meta" id="rng-meta"></div>
+    <div class="randomizer-actions">
+      <button class="btn" id="rng-again">Ещё раз</button>
+      <button class="btn btn-accent" id="rng-close">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL (hidden, triggered from settings panel) -->
+<div class="modal-overlay" id="import-overlay">
+  <div class="import-modal">
+    <div class="modal-header">
+      <div class="modal-title">Импорт JSON</div>
+      <button class="modal-close" id="import-close">✕</button>
+    </div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;color:var(--text2);font-style:italic;">
+      Поля <code style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;background:var(--bg4);padding:0.1rem 0.3rem;border-radius:3px">name, cat, status</code>. Если статус не указан — ставится <strong style="color:var(--green)">просмотрено</strong>. Дубликаты пропускаются.
+    </div>
+    <label class="import-drop" id="import-drop">
+      <input type="file" id="import-file" accept=".json">
+      <div>📂 Нажми или перетащи JSON-файл сюда</div>
+    </label>
+    <div class="import-log" id="import-log"></div>
+    <div class="modal-actions">
+      <button class="btn" id="import-cancel">Отмена</button>
+      <button class="btn btn-accent" id="import-confirm" style="display:none">Импортировать</button>
+    </div>
+  </div>
+</div>
+
+<!-- UNIFIED SETTINGS PANEL -->
+<div class="modal-overlay" id="settings-overlay">
+  <div class="settings-modal" style="max-width:520px;max-height:90vh;overflow-y:auto;">
+    <div class="modal-header">
+      <div class="modal-title">Настройки</div>
+      <button class="modal-close" id="settings-close">✕</button>
+    </div>
+
+    <!-- SECTION: TMDB -->
+    <div class="settings-section">
+      <div class="settings-section-title">🎬 TMDB API</div>
+      <div class="field">
+        <label>API Key / Bearer Token</label>
+        <input type="text" id="settings-tmdb-key" placeholder="Вставь ключ TMDB v3 или Bearer Token v4">
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;color:var(--text3);font-style:italic;line-height:1.4;">
+        Используется для постеров, жанров, рейтинга. Для аниме без ключа работает AniList.
+      </div>
+      <div class="settings-row">
+        <button class="btn" id="refresh-tmdb-btn">🔄 Обновить весь список с TMDB</button>
+      </div>
+    </div>
+
+    <!-- SECTION: GIST SYNC -->
+    <div class="settings-section">
+      <div class="settings-section-title">☁️ Синхронизация (GitHub Gist)</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;color:var(--text2);line-height:1.5;margin-bottom:0.6rem;">
+        Данные хранятся в твоём приватном Gist — доступно с любого устройства.<br>
+        <span style="color:var(--text3);font-style:italic;">Как получить токен: github.com → Settings → Developer settings → Personal access tokens → Generate new token → выбери scope <strong>gist</strong></span>
+      </div>
+      <div class="field">
+        <label>GitHub Token (scope: gist)</label>
+        <input type="password" id="settings-github-token" placeholder="ghp_xxxxxxxxxxxx">
+      </div>
+      <div class="field">
+        <label>Gist ID <span style="color:var(--text3);font-style:italic;font-size:0.8em;">(заполнится автоматически при первом сохранении)</span></label>
+        <input type="text" id="settings-gist-id" placeholder="Оставь пустым для создания нового Gist">
+      </div>
+      <div class="settings-row" style="gap:0.5rem;flex-wrap:wrap;">
+        <button class="btn btn-accent" id="gist-push-btn">⬆ Сохранить в облако</button>
+        <button class="btn" id="gist-pull-btn">⬇ Загрузить из облака</button>
+        <span class="gist-status" id="gist-status"></span>
+      </div>
+    </div>
+
+    <!-- SECTION: DATA -->
+    <div class="settings-section">
+      <div class="settings-section-title">📦 Данные</div>
+      <div class="settings-row" style="flex-wrap:wrap;gap:0.5rem;">
+        <button class="btn" id="import-btn">⬆ Импорт JSON</button>
+        <button class="btn" id="export-btn">⬇ Экспорт просмотренного</button>
+        <button class="btn" id="export-view-btn">👁 Экспорт для просмотра</button>
+      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:0.85rem;color:var(--text3);font-style:italic;margin-top:0.4rem;">
+        «Экспорт для просмотра» — HTML файл с вшитыми данными. Можно скинуть другу, открыть на телефоне без редактирования.
+      </div>
+    </div>
+
+    <!-- SECTION: DANGER -->
+    <div class="settings-section">
+      <div class="settings-section-title" style="color:var(--red)">⚠️ Опасная зона</div>
+      <div class="settings-row">
+        <button class="btn btn-danger" id="clear-db-btn">🗑 Очистить всю базу</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="settings-cancel">Закрыть</button>
+      <button class="btn btn-accent" id="settings-save">Сохранить настройки</button>
+    </div>
+  </div>
+</div>
+
+<!-- REWATCH HISTORY MODAL -->
+<div class="modal-overlay" id="rewatch-overlay">
+  <div class="rewatch-history-modal">
+    <div class="modal-header">
+      <div class="modal-title" id="rewatch-modal-title" style="font-size:1.3rem">История просмотров</div>
+      <button class="modal-close" id="rewatch-close">✕</button>
+    </div>
+    <div class="rewatch-list" id="rewatch-list"></div>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+      <button class="btn btn-accent" id="rewatch-add-btn" style="flex:1">+ С датой</button>
+      <button class="btn" id="rewatch-add-nodate-btn" style="flex:1">+ Без даты</button>
+    </div>
+    <button class="btn" id="rewatch-done-btn">Закрыть</button>
+  </div>
+</div>
+
+<!-- SYNC INDICATOR -->
+<div class="sync-indicator" id="sync-indicator">☁ синхронизация...</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'filmoteka_v2';
+const TMDB_KEY_STORAGE = 'filmoteka_tmdb_key';
+const GITHUB_TOKEN_STORAGE = 'filmoteka_github_token';
+const GIST_ID_STORAGE = 'filmoteka_gist_id';
+let tmdbApiKey = localStorage.getItem(TMDB_KEY_STORAGE) || '';
+let githubToken = localStorage.getItem(GITHUB_TOKEN_STORAGE) || '';
+let gistId = localStorage.getItem(GIST_ID_STORAGE) || '';
+let db = [];
+
+// TOAST
+function toast(msg, type='') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' toast-'+type : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+}
+let editingId = null;
+let currentStatus = 'all';
+let currentCat = 'all';
+let currentGenre = '';
+let searchQuery = '';
+let sortMode = 'added';
+
+// SAMPLE DATA
+const SAMPLES = [
+  {id:s(),title:'Дюна',cat:'film',year:2021,genres:['Фантастика','Эпос'],status:'watched',rating:9,fav:true,notes:'Великолепная экранизация',totalSeasons:0,totalEps:0,curSeason:0,curEp:0,added:Date.now()-10},
+  {id:s(),title:'Атака Титанов',cat:'anime',year:2013,genres:['Экшн','Триллер','Тёмное фэнтези'],status:'watched',rating:10,fav:true,notes:'',totalSeasons:4,totalEps:87,curSeason:4,curEp:87,added:Date.now()-9},
+  {id:s(),title:'Ведьмак',cat:'series',year:2019,genres:['Фэнтези','Экшн'],status:'watching',rating:7,fav:false,notes:'',totalSeasons:3,totalEps:24,curSeason:2,curEp:6,added:Date.now()-8},
+  {id:s(),title:'Унесённые призраками',cat:'anime-film',year:2001,genres:['Фэнтези','Приключения'],status:'watched',rating:10,fav:true,notes:'Шедевр Миядзаки',totalSeasons:0,totalEps:0,curSeason:0,curEp:0,added:Date.now()-7},
+  {id:s(),title:'Симпсоны',cat:'cartoon-series',year:1989,genres:['Комедия','Сатира'],status:'watching',rating:8,fav:false,notes:'',totalSeasons:35,totalEps:770,curSeason:10,curEp:3,added:Date.now()-6},
+  {id:s(),title:'Интерстеллар',cat:'film',year:2014,genres:['Фантастика','Драма'],status:'watched',rating:9,fav:true,notes:'',totalSeasons:0,totalEps:0,curSeason:0,curEp:0,added:Date.now()-5},
+  {id:s(),title:'Наруто',cat:'anime',year:2002,genres:['Экшн','Приключения','Сёнен'],status:'dropped',rating:6,fav:false,notes:'Много воды',totalSeasons:2,totalEps:720,curSeason:1,curEp:135,added:Date.now()-4},
+  {id:s(),title:'Оппенгеймер',cat:'film',year:2023,genres:['Драма','Биография','История'],status:'planned',rating:0,fav:false,notes:'',totalSeasons:0,totalEps:0,curSeason:0,curEp:0,added:Date.now()-3},
+  {id:s(),title:'Ход Королевы',cat:'series',year:2020,genres:['Драма','Спорт'],status:'watched',rating:9,fav:true,notes:'',totalSeasons:1,totalEps:7,curSeason:1,curEp:7,added:Date.now()-2},
+  {id:s(),title:'Моана',cat:'cartoon',year:2016,genres:['Приключения','Мюзикл'],status:'watched',rating:8,fav:false,notes:'',totalSeasons:0,totalEps:0,curSeason:0,curEp:0,added:Date.now()-1},
+];
+
+function s() { return Math.random().toString(36).slice(2,10); }
+
+function load() {
+  try { db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { db = []; }
+  if (!db.length) { db = SAMPLES; save(true); }
+}
+
+function save(skipSync=false) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+  if (!skipSync) autoSyncDebounced();
+}
+
+// CAT LABELS
+const CAT_LABELS = {
+  'film':'Фильм','series':'Сериал','anime':'Аниме','anime-film':'Аниме-фильм','cartoon':'Мультфильм','cartoon-series':'Мультсериал'
+};
+
+const STATUS_LABELS = {
+  'watched':'Просмотрено','watching':'Смотрю','planned':'Запланировано','dropped':'Брошено'
+};
+
+const STATUS_BADGE = {
+  'watched':'badge-watched','watching':'badge-watching','planned':'badge-planned','dropped':'badge-dropped'
+};
+
+// ── TMDB / ANILIST LOOKUP ──────────────────────────────────────────
+
+const GENRE_MAP_RU = {
+  28:'Боевик',12:'Приключения',16:'Анимация',35:'Комедия',80:'Криминал',
+  99:'Документальный',18:'Драма',10751:'Семейный',14:'Фэнтези',36:'История',
+  27:'Ужасы',10402:'Музыкальный',9648:'Мистика',10749:'Мелодрама',878:'Фантастика',
+  10770:'Телефильм',53:'Триллер',10752:'Военный',37:'Вестерн',
+  10759:'Боевик и приключения',10762:'Детский',10763:'Новости',10764:'Реалити',
+  10765:'Фантастика и фэнтези',10766:'Мыльная опера',10767:'Ток-шоу',10768:'Война и политика',
+};
+
+// Search TMDB and return top N candidates for picker
+async function searchTMDBCandidates(title, cat) {
+  if (!tmdbApiKey) return [];
+  const isTV = ['series','anime','cartoon-series'].includes(cat);
+  const mediaTypes = isTV ? ['tv','movie'] : ['movie','tv'];
+  const isBearer = tmdbApiKey.length > 40;
+  const headers = isBearer
+    ? { 'Authorization': `Bearer ${tmdbApiKey}`, 'Content-Type': 'application/json' }
+    : {};
+
+  const candidates = [];
+
+  async function search(query, lang, mediaType) {
+    const keyParam = isBearer ? '' : `&api_key=${tmdbApiKey}`;
+    const url = `https://api.themoviedb.org/3/search/${mediaType}?query=${encodeURIComponent(query)}&language=${lang}&page=1${keyParam}`;
+    try {
+      const r = await fetch(url, { headers });
+      if (!r.ok) return [];
+      const data = await r.json();
+      return (data.results || []).slice(0, 5).map(item => ({ item, mediaType }));
+    } catch { return []; }
+  }
+
+  // Collect results from primary media type first, then secondary
+  for (const mt of mediaTypes) {
+    const res = await search(title, 'ru-RU', mt);
+    candidates.push(...res);
+    if (candidates.length >= 5) break;
+  }
+  // If not enough, try English
+  if (candidates.length < 3) {
+    for (const mt of mediaTypes) {
+      const res = await search(title, 'en-US', mt);
+      candidates.push(...res);
+      if (candidates.length >= 6) break;
+    }
+  }
+
+  // Deduplicate by id+mediaType
+  const seen = new Set();
+  return candidates.filter(c => {
+    const key = c.mediaType + c.item.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, 6);
+}
+
+// Fetch full details for one TMDB item
+async function fetchTMDBDetails(tmdbId, mediaType) {
+  if (!tmdbApiKey) return null;
+  const isBearer = tmdbApiKey.length > 40;
+  const headers = isBearer
+    ? { 'Authorization': `Bearer ${tmdbApiKey}`, 'Content-Type': 'application/json' }
+    : {};
+  const keyParam = isBearer ? '' : `?api_key=${tmdbApiKey}`;
+  const sep = isBearer ? '?' : '&';
+  const url = `https://api.themoviedb.org/3/${mediaType}/${tmdbId}${keyParam}${sep}language=ru-RU`;
+  try {
+    const r = await fetch(url, { headers });
+    if (!r.ok) return null;
+    const detail = await r.json();
+    const genres = (detail.genres || []).map(g => GENRE_MAP_RU[g.id] || g.name).filter(Boolean);
+    const year = (detail.release_date || detail.first_air_date || '').slice(0,4);
+    const poster = detail.poster_path ? `https://image.tmdb.org/t/p/w342${detail.poster_path}` : null;
+    const tmdbRating = detail.vote_average ? Math.round(detail.vote_average * 10) / 10 : null;
+    const titleOriginal = detail.original_title || detail.original_name || null;
+    return { genres, year: year ? parseInt(year) : null, poster, tmdbRating, titleOriginal };
+  } catch { return null; }
+}
+
+// Legacy single-result lookup used by bulk refresh
+async function lookupTMDB(title, cat) {
+  const candidates = await searchTMDBCandidates(title, cat);
+  if (!candidates.length) return null;
+  const { item, mediaType } = candidates[0];
+  return fetchTMDBDetails(item.id, mediaType);
+}
+
+async function lookupAniList(title) {
+  const query = `query($search:String){Media(search:$search,type:ANIME){genres startDate{year}}}`;
+  try {
+    const r = await fetch('https://graphql.anilist.co', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ query, variables:{ search: title } })
+    });
+    const data = await r.json();
+    const media = data?.data?.Media;
+    if (!media) return null;
+    const ANILIST_GENRE_RU = {
+      'Action':'Экшн','Adventure':'Приключения','Comedy':'Комедия','Drama':'Драма',
+      'Ecchi':'Этти','Fantasy':'Фэнтези','Horror':'Ужасы','Mahou Shoujo':'Махо-сёдзё',
+      'Mecha':'Меха','Music':'Музыкальный','Mystery':'Мистика','Psychological':'Психологический',
+      'Romance':'Романтика','Sci-Fi':'Фантастика','Slice of Life':'Повседневность',
+      'Sports':'Спорт','Supernatural':'Сверхъестественное','Thriller':'Триллер',
+      'Hentai':'Хентай','Boys Love':'Яой','Girls Love':'Юри',
+    };
+    const genres = (media.genres || []).map(g => ANILIST_GENRE_RU[g] || g);
+    const year = media.startDate?.year || null;
+    return { genres, year };
+  } catch { return null; }
+}
+
+function applyTMDBResult(result, isAnime) {
+  if (result.genres && result.genres.length) document.getElementById('f-genres').value = result.genres.join(', ');
+  if (result.year) document.getElementById('f-year').value = result.year;
+  if (result.poster) document.getElementById('f-poster').value = result.poster;
+  if (result.tmdbRating) document.getElementById('f-tmdb-rating').value = result.tmdbRating;
+  const ratingStr = result.tmdbRating ? ` · TMDB: ${result.tmdbRating}` : '';
+  const status = document.getElementById('tmdb-status');
+  status.textContent = '✓ Данные получены' + (isAnime && !window._lastLookupHadTMDB ? ' (AniList)' : ' (TMDB)') + ratingStr;
+  status.className = 'tmdb-status ok';
+}
+
+function closeTMDBPicker() {
+  const picker = document.getElementById('tmdb-picker');
+  picker.classList.remove('open');
+  picker.innerHTML = '';
+}
+
+async function showTMDBPicker(candidates, isAnime) {
+  const picker = document.getElementById('tmdb-picker');
+  const status = document.getElementById('tmdb-status');
+  picker.innerHTML = '';
+
+  // If only one result — apply directly, no picker needed
+  if (candidates.length === 1) {
+    status.textContent = '⏳ Загружаю данные...';
+    const { item, mediaType } = candidates[0];
+    const result = await fetchTMDBDetails(item.id, mediaType);
+    if (result) { applyTMDBResult(result, isAnime); }
+    else { status.textContent = '✗ Не удалось загрузить'; status.className = 'tmdb-status err'; }
+    return;
+  }
+
+  status.textContent = `Найдено ${candidates.length} вариантов — выбери нужный:`;
+  status.className = 'tmdb-status';
+
+  candidates.forEach(({ item, mediaType }) => {
+    const year = (item.release_date || item.first_air_date || '').slice(0, 4);
+    const name = item.title || item.name || '—';
+    const originalName = item.original_title || item.original_name || '';
+    const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
+    const typeLabel = mediaType === 'tv' ? 'Сериал' : 'Фильм';
+
+    const el = document.createElement('div');
+    el.className = 'tmdb-picker-item';
+    el.innerHTML = `
+      ${item.poster_path
+        ? `<img class="tmdb-picker-thumb" src="https://image.tmdb.org/t/p/w92${item.poster_path}" loading="lazy">`
+        : `<div class="tmdb-picker-thumb-placeholder">🎬</div>`}
+      <div class="tmdb-picker-info">
+        <div class="tmdb-picker-title">${name}</div>
+        ${originalName && originalName !== name ? `<div class="tmdb-picker-meta" style="color:var(--text2)">${originalName}</div>` : ''}
+        <div class="tmdb-picker-meta">${typeLabel}${year ? ' · ' + year : ''}</div>
+      </div>
+      ${rating ? `<div class="tmdb-picker-rating">★ ${rating}</div>` : ''}`;
+
+    el.addEventListener('click', async () => {
+      closeTMDBPicker();
+      status.textContent = '⏳ Загружаю данные...';
+      status.className = 'tmdb-status';
+      const result = await fetchTMDBDetails(item.id, mediaType);
+      if (result) { window._lastLookupHadTMDB = true; applyTMDBResult(result, isAnime); }
+      else { status.textContent = '✗ Не удалось загрузить'; status.className = 'tmdb-status err'; }
+    });
+
+    picker.appendChild(el);
+  });
+
+  picker.classList.add('open');
+
+  // Close picker on outside click
+  setTimeout(() => {
+    document.addEventListener('click', function handler(e) {
+      if (!picker.contains(e.target) && e.target.id !== 'tmdb-lookup-btn') {
+        closeTMDBPicker();
+        document.removeEventListener('click', handler);
+      }
+    });
+  }, 10);
+}
+
+async function doTMDBLookup() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { toast('Введи название', 'err'); return; }
+  const cat = document.getElementById('f-cat').value;
+  const isAnime = cat === 'anime' || cat === 'anime-film';
+  const btn = document.getElementById('tmdb-lookup-btn');
+  const status = document.getElementById('tmdb-status');
+
+  closeTMDBPicker();
+  btn.disabled = true;
+  btn.textContent = '⏳';
+  status.textContent = 'Поиск...';
+  status.className = 'tmdb-status';
+  window._lastLookupHadTMDB = !!tmdbApiKey;
+
+  try {
+    if (isAnime && !tmdbApiKey) {
+      // AniList only
+      const al = await lookupAniList(title);
+      btn.disabled = false; btn.textContent = '🔍 TMDB';
+      if (al) { window._lastLookupHadTMDB = false; applyTMDBResult(al, true); }
+      else { status.textContent = '✗ Не найдено — заполни вручную'; status.className = 'tmdb-status err'; }
+      return;
+    }
+    if (!tmdbApiKey) {
+      status.textContent = '⚠ Нет API ключа — добавь в ⚙ API';
+      status.className = 'tmdb-status err';
+      btn.disabled = false; btn.textContent = '🔍 TMDB';
+      return;
+    }
+
+    const candidates = await searchTMDBCandidates(title, cat);
+    btn.disabled = false; btn.textContent = '🔍 TMDB';
+
+    if (!candidates.length) {
+      // For anime fallback to AniList
+      if (isAnime) {
+        const al = await lookupAniList(title);
+        if (al) { window._lastLookupHadTMDB = false; applyTMDBResult(al, true); return; }
+      }
+      status.textContent = '✗ Не найдено — заполни вручную';
+      status.className = 'tmdb-status err';
+      return;
+    }
+
+    await showTMDBPicker(candidates, isAnime);
+  } catch(e) {
+    btn.disabled = false; btn.textContent = '🔍 TMDB';
+    status.textContent = '✗ Ошибка: ' + e.message;
+    status.className = 'tmdb-status err';
+  }
+}
+
+// ── IMPORT ─────────────────────────────────────────────────────────
+
+const CAT_MAP_IMPORT = {
+  'film':'film','series':'series','anime':'anime',
+  'anime-film':'anime-film','cartoon':'cartoon',
+  'кино':'film','фильм':'film','фильмы':'film',
+  'сериалы':'series','сериал':'series',
+  'аниме':'anime',
+  'аниме-фильмы':'anime-film','аниме-фильм':'anime-film',
+  'cartoon-series':'cartoon-series',
+  'мультфильмы':'cartoon','мультфильм':'cartoon',
+  'мультсериалы':'cartoon-series','мультсериал':'cartoon-series',
+};
+
+const STATUS_MAP_IMPORT = {
+  'done':'watched','finish':'watched','watched':'watched',
+  'watching':'watching','смотрю':'watching',
+  'planned':'planned','запланировано':'planned',
+  'dropped':'dropped','брошено':'dropped',
+};
+
+let importPending = [];
+
+function parseImportJSON(raw) {
+  let parsed;
+  try { parsed = JSON.parse(raw); } catch { return null; }
+  if (!Array.isArray(parsed)) return null;
+  return parsed;
+}
+
+function processImport(parsed) {
+  const log = document.getElementById('import-log');
+  const confirmBtn = document.getElementById('import-confirm');
+  log.innerHTML = '';
+  log.classList.add('show');
+  importPending = [];
+
+  let skipped = 0, ready = 0;
+  const existingTitles = new Set(db.map(x => x.title.toLowerCase().trim()));
+
+  parsed.forEach((item, i) => {
+    const name = (item.name || item.title || '').trim();
+    if (!name || name === '-1') { skipped++; return; }
+    if (existingTitles.has(name.toLowerCase())) {
+      log.innerHTML += `<div class="warn">⟳ Пропуск (дубль): ${name}</div>`;
+      skipped++; return;
+    }
+
+    const catRaw = (item.cat || '').toLowerCase().trim();
+    const cat = CAT_MAP_IMPORT[catRaw] || 'film';
+    // При импорте: если статус не указан явно — ставим "просмотрено"
+    // Убираем все невидимые символы через replace
+    const statusRaw = (item.status || 'watched').toLowerCase().replace(/[^\wа-яё]/gi, '').trim();
+    const status = STATUS_MAP_IMPORT[statusRaw] || STATUS_MAP_IMPORT[(item.status||'').trim()] || 'watched';
+    if (ready < 3) log.innerHTML += `<div class="warn" style="font-size:0.6rem">debug: "${name}" status="${item.status}" → "${status}"</div>`;
+    const fav = item.favorite === true;
+    const rating = item.rating || item.userRating || 0;
+    const genres = Array.isArray(item.genres) ? item.genres : [];
+
+    importPending.push({
+      id: s(), title: name, cat, status, fav, rating,
+      genres, year: item.year || null, notes: item.notes || '',
+      poster: item.poster || null, tmdbRating: item.tmdbRating || null,
+      totalSeasons: item.totalSeasons || 0, curSeason: item.curSeason || 0,
+      totalEps: item.episodesTotal || item.totalEps || 0,
+      curEp: item.episodesWatched || item.curEp || 0,
+      added: Date.now() - (parsed.length - i),
+    });
+    existingTitles.add(name.toLowerCase());
+    ready++;
+  });
+
+  log.innerHTML += `<div class="ok">✓ Готово к импорту: ${ready} тайтлов</div>`;
+  if (skipped) log.innerHTML += `<div class="warn">⟳ Пропущено (дубли/пустые): ${skipped}</div>`;
+
+  confirmBtn.style.display = ready > 0 ? '' : 'none';
+  confirmBtn.textContent = `Импортировать ${ready}`;
+}
+
+// ── FILTER & SORT
+function filtered() {
+  let list = [...db];
+  if (currentCat === 'favorites') {
+    list = list.filter(x => x.fav);
+  } else if (currentCat !== 'all') {
+    list = list.filter(x => x.cat === currentCat);
+  }
+  if (currentStatus !== 'all') list = list.filter(x => x.status === currentStatus);
+  if (currentGenre) list = list.filter(x => x.genres && x.genres.some(g => g.toLowerCase() === currentGenre.toLowerCase()));
+  if (searchQuery) {
+    const q = searchQuery.toLowerCase();
+    list = list.filter(x => x.title.toLowerCase().includes(q) || (x.genres || []).some(g => g.toLowerCase().includes(q)));
+  }
+  list.sort((a,b) => {
+    if (sortMode === 'title') return a.title.localeCompare(b.title, 'ru');
+    if (sortMode === 'title-desc') return b.title.localeCompare(a.title, 'ru');
+    if (sortMode === 'year') return (b.year||0) - (a.year||0);
+    if (sortMode === 'year-asc') return (a.year||0) - (b.year||0);
+    if (sortMode === 'rating') return (b.rating||0) - (a.rating||0);
+    return (b.added||0) - (a.added||0);
+  });
+  return list;
+}
+
+// PROGRESS
+function getProgress(item) {
+  // Фильмы со статусом watched — 100%
+  const isFilmType = ['film','anime-film','cartoon'].includes(item.cat);
+  if (isFilmType) {
+    if (item.status === 'watched') return { pct: 100, curEp: 1, totalEps: 1, curSeason: 0, totalSeasons: 0, filmMode: true };
+    if (item.status === 'watching') return { pct: 50, curEp: 0, totalEps: 1, curSeason: 0, totalSeasons: 0, filmMode: true };
+    if (item.status === 'dropped') return { pct: 30, curEp: 0, totalEps: 1, curSeason: 0, totalSeasons: 0, filmMode: true };
+    return null; // planned — не показываем
+  }
+  // Сериалы/аниме — по эпизодам
+  if (item.status === 'watched' && item.totalEps > 0) {
+    return { pct: 100, curEp: item.totalEps, totalEps: item.totalEps, curSeason: item.totalSeasons || item.curSeason, totalSeasons: item.totalSeasons, filmMode: false };
+  }
+  if (!item.totalEps || item.totalEps === 0) return null;
+  const pct = Math.min(99, Math.round((item.curEp / item.totalEps) * 100));
+  return { pct, curEp: item.curEp, totalEps: item.totalEps, curSeason: item.curSeason, totalSeasons: item.totalSeasons, filmMode: false };
+}
+
+// BUILD GENRES LIST
+function allGenres() {
+  const set = new Set();
+  db.forEach(x => (x.genres || []).forEach(g => set.add(g)));
+  return [...set].sort((a,b) => a.localeCompare(b,'ru'));
+}
+
+function updateGenreFilter() {
+  const genres = allGenres();
+  const sel = document.getElementById('genre-select');
+  const row = document.getElementById('genre-filter-row');
+
+  sel.innerHTML = '<option value="">Все жанры</option>';
+  genres.forEach(g => {
+    const o = document.createElement('option');
+    o.value = g; o.textContent = g;
+    if (g === currentGenre) o.selected = true;
+    sel.appendChild(o);
+  });
+
+  row.innerHTML = '';
+  const allPill = document.createElement('button');
+  allPill.className = 'genre-filter-pill' + (currentGenre === '' ? ' active' : '');
+  allPill.textContent = 'Все'; allPill.onclick = () => { currentGenre = ''; render(); };
+  row.appendChild(allPill);
+  genres.forEach(g => {
+    const pill = document.createElement('button');
+    pill.className = 'genre-filter-pill' + (currentGenre === g ? ' active' : '');
+    pill.textContent = g; pill.onclick = () => { currentGenre = g; render(); };
+    row.appendChild(pill);
+  });
+}
+
+// UPDATE SIDEBAR COUNTS
+function updateCounts() {
+  const list = currentCat === 'favorites' ? db.filter(x=>x.fav) : currentCat === 'all' ? db : db.filter(x=>x.cat===currentCat);
+  document.getElementById('cnt-all').textContent = list.length;
+  ['watching','watched','planned','dropped'].forEach(st => {
+    document.getElementById('cnt-'+st).textContent = list.filter(x=>x.status===st).length;
+  });
+}
+
+// RENDER
+// ── REWATCH HISTORY ──────────────────────────────────────────────
+function formatDate(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+let rewatchItemId = null;
+
+function openRewatchModal(id) {
+  rewatchItemId = id;
+  const item = db.find(x=>x.id===id);
+  if (!item) return;
+  document.getElementById('rewatch-modal-title').textContent = item.title;
+  renderRewatchList(item);
+  document.getElementById('rewatch-overlay').classList.add('open');
+}
+
+function tsToInputVal(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toISOString().slice(0, 10);
+}
+
+function renderRewatchList(item) {
+  const list = document.getElementById('rewatch-list');
+  const rewatches = item.rewatches || [];
+  if (!rewatches.length) {
+    list.innerHTML = '<div style="font-family:Bebas Neue,sans-serif;color:var(--text3);font-size:0.95rem;">Пересмотров ещё не было</div>';
+    return;
+  }
+  list.innerHTML = rewatches.map((ts, i) => `
+    <div class="rewatch-entry" data-i="${i}">
+      <span style="flex-shrink:0;color:var(--accent);font-family:'JetBrains Mono',monospace;font-size:0.65rem;min-width:1.5rem">${i+1}×</span>
+      <div class="datepicker-wrap">
+        <button class="datepicker-trigger" data-i="${i}" data-ts="${ts||''}">${ts ? formatDate(ts) : '<span class=\'rewatch-nodate\'>без даты</span>'}</button>
+      </div>
+      <button class="rewatch-entry-del" data-i="${i}" title="Удалить">✕</button>
+    </div>
+  `).join('');
+
+  list.querySelectorAll('.datepicker-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const i = parseInt(btn.dataset.i);
+      const ts = btn.dataset.ts ? parseInt(btn.dataset.ts) : null;
+      openDatepicker(btn, ts, (newTs) => {
+        item.rewatches[i] = newTs;
+        save();
+        renderRewatchList(item);
+        render();
+      });
+    });
+  });
+
+  list.querySelectorAll('.rewatch-entry-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      item.rewatches.splice(parseInt(btn.dataset.i), 1);
+      save();
+      renderRewatchList(item);
+      render();
+    });
+  });
+}
+
+// ── AUTO SYNC ────────────────────────────────────────────────────
+let autoSyncTimer = null;
+let gistPushLock = false;
+function autoSyncDebounced() {
+  if (!githubToken || !gistId) return;
+  clearTimeout(autoSyncTimer);
+  const ind = document.getElementById('sync-indicator');
+  ind.textContent = '☁ сохранение...';
+  ind.classList.add('show');
+  autoSyncTimer = setTimeout(async () => {
+    if (gistPushLock) {
+      // retry after lock releases
+      autoSyncTimer = setTimeout(async () => {
+        await gistPush(true);
+        ind.textContent = '✓ сохранено';
+        setTimeout(() => ind.classList.remove('show'), 2000);
+      }, 1000);
+      return;
+    }
+    await gistPush(true);
+    ind.textContent = '✓ сохранено';
+    setTimeout(() => ind.classList.remove('show'), 2000);
+  }, 2500);
+}
+
+async function autoSyncOnLoad() {
+  if (!gistId) return;
+  const ind = document.getElementById('sync-indicator');
+  ind.textContent = '☁ загрузка...';
+  ind.classList.add('show');
+  try {
+    const headers = githubToken ? { 'Authorization': `token ${githubToken}` } : {};
+    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers, cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    const file = data.files && data.files['filmoteka.json'];
+    if (!file) throw new Error('no file');
+    const parsed = JSON.parse(file.content);
+    if (!Array.isArray(parsed)) throw new Error('bad format');
+    db = parsed;
+    save(true);
+    render();
+    ind.textContent = '✓ синхронизировано';
+  } catch(e) {
+    ind.textContent = '✗ нет связи';
+  }
+  setTimeout(() => ind.classList.remove('show'), 2500);
+}
+
+// ── CUSTOM DATEPICKER ────────────────────────────────────────────
+let dpPopup = null;
+let dpCallback = null;
+
+const MONTHS_RU = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const DAYS_RU = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+function closeDatepicker() {
+  if (dpPopup) { dpPopup.remove(); dpPopup = null; }
+}
+
+function openDatepicker(anchor, currentTs, callback) {
+  closeDatepicker();
+  dpCallback = callback;
+  const now = currentTs ? new Date(currentTs) : new Date();
+  let viewYear = now.getFullYear();
+  let viewMonth = now.getMonth();
+  let selectedTs = currentTs || null;
+
+  function render() {
+    if (dpPopup) dpPopup.remove();
+    dpPopup = document.createElement('div');
+    dpPopup.className = 'datepicker-popup';
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    const lastDay = new Date(viewYear, viewMonth + 1, 0);
+    // Monday-based: getDay() 0=Sun→6, 1=Mon→0
+    let startDow = firstDay.getDay();
+    startDow = startDow === 0 ? 6 : startDow - 1;
+
+    let daysHTML = '';
+    for (let e = 0; e < startDow; e++) daysHTML += `<div class="dp-day empty"></div>`;
+    for (let d = 1; d <= lastDay.getDate(); d++) {
+      const dt = new Date(viewYear, viewMonth, d);
+      dt.setHours(0,0,0,0);
+      const isToday = dt.getTime() === today.getTime();
+      const isSel = selectedTs && new Date(selectedTs).toDateString() === dt.toDateString();
+      daysHTML += `<div class="dp-day${isToday?' today':''}${isSel?' selected':''}" data-ts="${dt.getTime()}">${d}</div>`;
+    }
+
+    dpPopup.innerHTML = `
+      <div class="dp-header">
+        <button class="dp-nav" id="dp-prev">‹</button>
+        <span class="dp-month-label">${MONTHS_RU[viewMonth]} ${viewYear}</span>
+        <button class="dp-nav" id="dp-next">›</button>
+      </div>
+      <div class="dp-weekdays">${DAYS_RU.map(d=>`<div class="dp-weekday">${d}</div>`).join('')}</div>
+      <div class="dp-days">${daysHTML}</div>
+      <div class="dp-footer">
+        <button class="dp-btn" id="dp-clear">Очистить</button>
+        <button class="dp-btn accent" id="dp-today">Сегодня</button>
+      </div>
+    `;
+
+    // Position near anchor
+    const rect = anchor.getBoundingClientRect();
+    dpPopup.style.top = (rect.bottom + 6) + 'px';
+    dpPopup.style.left = Math.min(rect.left, window.innerWidth - 260) + 'px';
+    document.body.appendChild(dpPopup);
+
+    dpPopup.querySelector('#dp-prev').addEventListener('click', e => { e.stopPropagation(); viewMonth--; if(viewMonth<0){viewMonth=11;viewYear--;} render(); });
+    dpPopup.querySelector('#dp-next').addEventListener('click', e => { e.stopPropagation(); viewMonth++; if(viewMonth>11){viewMonth=0;viewYear++;} render(); });
+    dpPopup.querySelector('#dp-clear').addEventListener('click', e => { e.stopPropagation(); closeDatepicker(); callback(null); });
+    dpPopup.querySelector('#dp-today').addEventListener('click', e => { e.stopPropagation(); closeDatepicker(); callback(today.getTime()); });
+    dpPopup.querySelectorAll('.dp-day[data-ts]').forEach(day => {
+      day.addEventListener('click', e => { e.stopPropagation(); closeDatepicker(); callback(parseInt(day.dataset.ts)); });
+    });
+  }
+
+  render();
+  setTimeout(() => document.addEventListener('click', closeDatepicker, { once: true }), 0);
+}
+
+// ── LAZY LOADING ─────────────────────────────────────────────────
+const PAGE_SIZE = 24;
+let lazyList = [];
+let lazyOffset = 0;
+let lazyObserver = null;
+
+function buildCard(item) {
+  const prog = getProgress(item);
+  const card = document.createElement('div');
+  card.className = 'card';
+
+  let progHTML = '';
+  if (prog) {
+    const fillClass = prog.pct >= 100 ? 'done' : item.status === 'dropped' ? 'dropped' : '';
+    const pillClass = prog.pct >= 100 ? 'green' : item.status === 'dropped' ? 'red' : 'accent';
+    let pillsHTML = '';
+    if (prog.filmMode) {
+      const filmLabel = prog.pct >= 100 ? 'Просмотрено' : item.status === 'watching' ? 'Смотрю' : 'Брошено';
+      pillsHTML = `<span class="prog-pill ${pillClass}">${filmLabel}</span>`;
+    } else {
+      const seasonPill = `<span class="prog-pill ${pillClass}">Сезон ${prog.curSeason||'?'}</span>`;
+      const epPill = `<span class="prog-pill">Эп. ${prog.curEp} / ${prog.totalEps}</span>`;
+      pillsHTML = seasonPill + epPill;
+    }
+    progHTML = `<div class="card-progress">
+      <div class="prog-pills">
+        ${pillsHTML}
+        <span style="flex:1"></span>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:0.58rem;color:var(--text3)">${prog.pct}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${prog.pct}%"></div></div>
+    </div>`;
+  }
+
+  const stars = [1,2,3,4,5,6,7,8,9,10].map(v =>
+    `<span class="star ${v<=item.rating?'lit':''}" data-id="${item.id}" data-v="${v}">★</span>`
+  ).join('');
+
+  const allGenres = (item.genres||[]);
+  const genreTagsHTML = allGenres.length ? `
+    <div class="genre-tooltip-wrap">
+      <span class="genre-label">Жанры</span>
+      <div class="genre-tooltip">${allGenres.map(g=>`<span class="genre-tag">${g}</span>`).join('')}</div>
+    </div>` : '';
+
+  card.innerHTML = `
+    <div class="card-poster">
+      ${item.poster ? `<img src="${item.poster}" alt="${item.title}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center">${item.title.charAt(0)}</span>` : `<span>${item.title.charAt(0)}</span>`}
+      <span class="card-badge ${STATUS_BADGE[item.status]}">${STATUS_LABELS[item.status]}</span>
+      <span class="card-fav ${item.fav?'active':''}" data-id="${item.id}" title="Избранное">♥</span>
+    </div>
+    <div class="card-body">
+      <div class="card-title">${item.title}</div>
+      <div class="card-meta">
+        <span>${CAT_LABELS[item.cat]||item.cat}</span>
+        ${item.year?`<span>${item.year}</span>`:''}
+        ${item.tmdbRating?`<span style="color:var(--accent)">★ ${item.tmdbRating}</span>`:''}
+      </div>
+      <div class="card-genres">${genreTagsHTML}</div>
+      <div class="card-rating">${stars}${item.rating?`<span style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text3);margin-left:4px">${item.rating}/10</span>`:''}</div>
+      ${progHTML}
+      ${item.status==='watched' ? `<div class="rewatch-count" id="rw-${item.id}">
+        ${(item.rewatches||[]).length > 0
+          ? '<span class="rewatch-dot"></span><span>Пересмотрено: '+(item.rewatches.length)+'×</span>'
+          : '<span style="opacity:0.5">Пересмотров нет</span>'}
+        </div>` : ''}
+      ${item.status==='watched' ? `<button class="rewatch-btn" data-id="${item.id}">↺ Пересмотры</button>` : ''}
+    </div>`;
+
+  card.querySelector('.card-body').addEventListener('click', () => openEdit(item.id));
+  card.querySelector('.card-poster').addEventListener('click', e => {
+    if (!e.target.classList.contains('card-fav')) openEdit(item.id);
+  });
+  card.querySelector('.card-fav').addEventListener('click', e => {
+    e.stopPropagation();
+    const it = db.find(x=>x.id===item.id);
+    if (it) { it.fav = !it.fav; save(); renderCards(); }
+  });
+  card.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', e => {
+      e.stopPropagation();
+      const it = db.find(x=>x.id===star.dataset.id);
+      if (it) { it.rating = parseInt(star.dataset.v); save(); renderCards(); }
+    });
+  });
+  const rwBtn = card.querySelector('.rewatch-btn');
+  if (rwBtn) {
+    rwBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      openRewatchModal(rwBtn.dataset.id);
+    });
+  }
+  return card;
+}
+
+function appendCards(from, to) {
+  const grid = document.getElementById('grid');
+  const frag = document.createDocumentFragment();
+  for (let i = from; i < to && i < lazyList.length; i++) {
+    frag.appendChild(buildCard(lazyList[i]));
+  }
+  // Remove sentinel before appending
+  const old = document.getElementById('lazy-sentinel');
+  if (old) old.remove();
+  grid.appendChild(frag);
+  // Add sentinel if more items remain
+  if (to < lazyList.length) {
+    const sentinel = document.createElement('div');
+    sentinel.id = 'lazy-sentinel';
+    sentinel.style.cssText = 'grid-column:1/-1;height:1px';
+    grid.appendChild(sentinel);
+    if (lazyObserver) lazyObserver.observe(sentinel);
+  }
+}
+
+function renderCards() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  if (lazyObserver) lazyObserver.disconnect();
+
+  lazyObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && lazyOffset < lazyList.length) {
+      const next = lazyOffset + PAGE_SIZE;
+      appendCards(lazyOffset, next);
+      lazyOffset = next;
+    }
+  }, { rootMargin: '200px' });
+
+  if (!lazyList.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">🎬</div>
+      <h3>Ничего не найдено</h3>
+      <p>Попробуйте изменить фильтры или добавьте новое произведение</p>
+    </div>`;
+    return;
+  }
+
+  lazyOffset = PAGE_SIZE;
+  appendCards(0, PAGE_SIZE);
+}
+
+function render() {
+  updateCounts();
+  updateGenreFilter();
+  const list = filtered();
+
+  // Stats — always show total filtered count
+  document.getElementById('stat-shown').textContent = list.length;
+  const watched = list.filter(x=>x.status==='watched').length;
+  document.getElementById('stat-watched').textContent = watched;
+  const rated = list.filter(x=>x.rating>0);
+  document.getElementById('stat-rating').textContent = rated.length ? (rated.reduce((s,x)=>s+x.rating,0)/rated.length).toFixed(1) : '—';
+
+  // Reset lazy state on every re-render (filter/search/tab change)
+  lazyList = list;
+  lazyOffset = 0;
+
+  // Scroll grid-wrap to top on filter/tab change
+  const gw = document.querySelector('.grid-wrap');
+  if (gw) gw.scrollTop = 0;
+
+  renderCards();
+}
+
+
+
+// MODAL
+let modalRating = 0;
+let modalStatus = 'planned';
+
+function openModal(id) {
+  editingId = id || null;
+  const overlay = document.getElementById('modal-overlay');
+  const item = id ? db.find(x=>x.id===id) : null;
+
+  document.getElementById('modal-title-text').textContent = id ? 'Редактировать' : 'Добавить';
+  document.getElementById('f-title').value = item ? item.title : '';
+  document.getElementById('f-cat').value = item ? item.cat : 'film';
+  document.getElementById('f-year').value = item ? (item.year||'') : '';
+  document.getElementById('f-genres').value = item ? (item.genres||[]).join(', ') : '';
+  document.getElementById('f-notes').value = item ? (item.notes||'') : '';
+  document.getElementById('f-total-seasons').value = item ? (item.totalSeasons||'') : '';
+  document.getElementById('f-cur-season').value = item ? (item.curSeason||'') : '';
+  document.getElementById('f-total-eps').value = item ? (item.totalEps||'') : '';
+  document.getElementById('f-cur-ep').value = item ? (item.curEp||'') : '';
+  document.getElementById('f-poster').value = item ? (item.poster||'') : '';
+  document.getElementById('f-tmdb-rating').value = item ? (item.tmdbRating||'') : '';
+
+  modalRating = item ? (item.rating||0) : 0;
+  modalStatus = item ? item.status : 'planned';
+
+  updateModalStars();
+  updateModalStatus();
+  updateModalProgress();
+  updateProgressSection();
+
+  document.getElementById('delete-btn').style.display = id ? 'block' : 'none';
+  overlay.classList.add('open');
+  document.getElementById('f-title').focus();
+}
+
+function updateModalStars() {
+  document.querySelectorAll('.modal-star').forEach(s => {
+    s.classList.toggle('lit', parseInt(s.dataset.v) <= modalRating);
+  });
+}
+
+function updateModalStatus() {
+  document.querySelectorAll('.status-pill').forEach(p => {
+    p.classList.toggle('active', p.dataset.status === modalStatus);
+  });
+}
+
+function updateModalProgress() {
+  const totalEps = parseInt(document.getElementById('f-total-eps').value)||0;
+  const curEp = parseInt(document.getElementById('f-cur-ep').value)||0;
+  const pct = totalEps > 0 ? Math.min(100, Math.round(curEp/totalEps*100)) : 0;
+  document.getElementById('modal-progress-fill').style.width = pct + '%';
+  document.getElementById('modal-progress-pct').textContent = totalEps > 0 ? pct + '%' : '';
+}
+
+function updateProgressSection() {
+  const cat = document.getElementById('f-cat').value;
+  const hasProgress = ['series','anime','cartoon-series'].includes(cat);
+  document.getElementById('progress-section').style.display = hasProgress ? '' : 'none';
+}
+
+function closeModal() {
+  if (typeof closeTMDBPicker === "function") closeTMDBPicker();
+  document.getElementById('modal-overlay').classList.remove('open');
+  editingId = null;
+}
+
+function saveItem() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { document.getElementById('f-title').focus(); return; }
+
+  const genreStr = document.getElementById('f-genres').value;
+  const genres = genreStr.split(',').map(g=>g.trim()).filter(Boolean);
+
+  const data = {
+    title,
+    cat: document.getElementById('f-cat').value,
+    year: parseInt(document.getElementById('f-year').value)||null,
+    genres,
+    notes: document.getElementById('f-notes').value.trim(),
+    status: modalStatus,
+    rating: modalRating,
+    poster: document.getElementById('f-poster').value || null,
+    tmdbRating: parseFloat(document.getElementById('f-tmdb-rating').value)||null,
+    totalSeasons: parseInt(document.getElementById('f-total-seasons').value)||0,
+    curSeason: parseInt(document.getElementById('f-cur-season').value)||0,
+    totalEps: parseInt(document.getElementById('f-total-eps').value)||0,
+    curEp: parseInt(document.getElementById('f-cur-ep').value)||0,
+  };
+
+  if (editingId) {
+    const idx = db.findIndex(x=>x.id===editingId);
+    if (idx !== -1) { db[idx] = {...db[idx], ...data}; }
+  } else {
+    db.unshift({ id: s(), fav: false, added: Date.now(), ...data });
+  }
+  save(); closeModal(); render();
+}
+
+function deleteItem() {
+  if (!editingId) return;
+  if (!confirm('Удалить «' + (db.find(x=>x.id===editingId)||{}).title + '»?')) return;
+  db = db.filter(x=>x.id!==editingId);
+  save(); closeModal(); render();
+}
+
+// ── EXPORT FOR VIEWING ────────────────────────────────────────────
+function exportForViewing() {
+  // Grab current HTML directly from DOM — no fetch needed, works with file:// too
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const dbJson = JSON.stringify(db);
+
+  // Inject hardcoded data so the readonly copy has everything baked in
+  html = html.replace(
+    'function load() {',
+    `const READONLY_DATA = ${dbJson};\nfunction load() { db = READONLY_DATA; return;`
+  );
+
+  // Hide editing controls
+  html = html.replace('id="add-btn"', 'id="add-btn" style="display:none"');
+  html = html.replace('id="settings-btn"', 'id="settings-btn" style="display:none"');
+  html = html.replace('id="rng-btn"', 'id="rng-btn" style="display:none"');
+
+  // Mark as readonly in the title
+  html = html.replace(
+    'Фильм<span>отека</span>',
+    'Фильм<span>отека</span><span style="font-family:JetBrains Mono,monospace;font-size:0.55rem;letter-spacing:0.1em;color:var(--text3);margin-left:0.8rem;align-self:center">ПРОСМОТР</span>'
+  );
+
+  const blob = new Blob([html], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `filmoteka_view_${new Date().toISOString().slice(0,10)}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('Файл для просмотра создан', 'ok');
+}
+
+// ── BULK TMDB REFRESH ──────────────────────────────────────────────
+async function refreshAllFromTMDB() {
+  if (!tmdbApiKey) { toast('Сначала добавь TMDB API ключ в ⚙ API', 'err'); return; }
+  const btn = document.getElementById('refresh-tmdb-btn');
+  const total = db.length;
+  let done = 0, updated = 0, failed = 0;
+  btn.disabled = true;
+
+  for (const item of db) {
+    btn.textContent = `⏳ ${done}/${total}...`;
+    try {
+      let result = null;
+      if (item.cat === 'anime' || item.cat === 'anime-film') {
+        result = await lookupTMDB(item.title, item.cat);
+        if (!result || !result.genres.length) {
+          const al = await lookupAniList(item.title);
+          if (al) result = { ...result, ...al };
+        }
+      } else {
+        result = await lookupTMDB(item.title, item.cat);
+      }
+      if (result) {
+        if (result.genres && result.genres.length) item.genres = result.genres;
+        if (result.year && !item.year) item.year = result.year;
+        if (result.poster) item.poster = result.poster;
+        if (result.tmdbRating) item.tmdbRating = result.tmdbRating;
+        updated++;
+      } else { failed++; }
+    } catch { failed++; }
+    done++;
+    // Небольшая задержка чтобы не спамить API
+    await new Promise(r => setTimeout(r, 250));
+  }
+
+  save(); render();
+  btn.disabled = false;
+  btn.textContent = '🔄 Обновить с TMDB';
+  toast(`Обновлено: ${updated}, не найдено: ${failed}`, updated > 0 ? 'ok' : 'err');
+}
+
+// RANDOMIZER
+function exportWatched() {
+  const watched = db.filter(x => x.status === 'watched');
+  if (!watched.length) { toast('Нет просмотренных для экспорта', 'err'); return; }
+  const data = watched.map(x => ({
+    title: x.title,
+    cat: x.cat,
+    year: x.year || null,
+    genres: x.genres || [],
+    status: x.status,
+    rating: x.rating || 0,
+    tmdbRating: x.tmdbRating || null,
+    poster: x.poster || null,
+    fav: x.fav || false,
+    notes: x.notes || '',
+    totalSeasons: x.totalSeasons || 0,
+    totalEps: x.totalEps || 0,
+    added: x.added,
+  }));
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `filmoteka_watched_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`Экспортировано ${data.length} просмотренных`, 'ok');
+}
+
+// GIST SYNC
+async function gistPush(silent=false) {
+  if (!githubToken) { if(!silent) toast("Нет GitHub токена — укажи в настройках", "err"); return; }
+  if (gistPushLock) { console.log('gistPush blocked by lock'); return; }
+  gistPushLock = true;
+  const statusEl = document.getElementById("gist-status");
+  statusEl.className = "gist-status loading";
+  statusEl.textContent = "Сохранение...";
+  const content = JSON.stringify(db, null, 2);
+  try {
+    let url, method;
+    if (gistId) { url = `https://api.github.com/gists/${gistId}`; method = "PATCH"; }
+    else { url = "https://api.github.com/gists"; method = "POST"; }
+    const body = { description: "Filmoteka backup", public: false, files: { "filmoteka.json": { content } } };
+    const r = await fetch(url, { method, headers: { "Authorization": `token ${githubToken}`, "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    if (!gistId) { gistId = data.id; localStorage.setItem(GIST_ID_STORAGE, gistId); document.getElementById("settings-gist-id").value = gistId; }
+    statusEl.className = "gist-status ok"; statusEl.textContent = "✓ Сохранено"; if(!silent) toast("Данные сохранены в Gist", "ok");
+  } catch(e) { statusEl.className = "gist-status err"; statusEl.textContent = "✗ Ошибка: " + e.message; if(!silent) toast("Ошибка сохранения в Gist", "err"); }
+}
+async function gistPull() {
+  if (!gistId) { toast("Нет Gist ID — укажи в настройках", "err"); return; }
+  const statusEl = document.getElementById("gist-status");
+  statusEl.className = "gist-status loading"; statusEl.textContent = "Загрузка...";
+  try {
+    const headers = githubToken ? { "Authorization": `token ${githubToken}` } : {};
+    const r = await fetch(`https://api.github.com/gists/${gistId}`, { headers, cache: "no-store" });
+    if (!r.ok) throw new Error(r.status);
+    const data = await r.json();
+    const file = data.files && data.files["filmoteka.json"];
+    if (!file) throw new Error("Файл не найден в Gist");
+    const parsed = JSON.parse(file.content);
+    if (!Array.isArray(parsed)) throw new Error("Неверный формат");
+    db = parsed; save(true); render();
+    statusEl.className = "gist-status ok"; statusEl.textContent = "✓ Загружено"; toast(`Загружено ${db.length} тайтлов из Gist`, "ok");
+  } catch(e) { statusEl.className = "gist-status err"; statusEl.textContent = "✗ Ошибка: " + e.message; toast("Ошибка загрузки из Gist", "err"); }
+}
+
+// RANDOMIZER
+function openRandomizer() {
+  const cats = ['film','anime-film','cartoon'];
+  const pool = db.filter(x => cats.includes(x.cat) && x.status !== 'watched');
+  if (!pool.length) {
+    alert('Нет доступных фильмов/аниме-фильмов/мультфильмов в статусе "не просмотрено"!');
+    return;
+  }
+  const item = pool[Math.floor(Math.random() * pool.length)];
+  document.getElementById('rng-title').textContent = item.title;
+  document.getElementById('rng-cat-label').textContent = CAT_LABELS[item.cat] + (item.year ? ' · ' + item.year : '');
+  document.getElementById('rng-meta').textContent = (item.genres||[]).join(', ');
+  document.getElementById('rng-dice').style.animation = 'none';
+  setTimeout(() => { document.getElementById('rng-dice').style.animation = ''; }, 10);
+  document.getElementById('rng-overlay').classList.add('open');
+}
+
+// OPEN EDIT
+function openEdit(id) { openModal(id); }
+
+// INIT EVENTS
+document.addEventListener('DOMContentLoaded', () => {
+  load();
+
+  // Tabs
+  document.getElementById('main-tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentCat = btn.dataset.cat;
+    render();
+  });
+
+  // Sidebar
+  document.getElementById('status-sidebar').addEventListener('click', e => {
+    const btn = e.target.closest('.sidebar-btn');
+    if (!btn) return;
+    document.querySelectorAll('.sidebar-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentStatus = btn.dataset.status;
+    render();
+  });
+
+  // Search
+  document.getElementById('search-input').addEventListener('input', e => {
+    searchQuery = e.target.value;
+    render();
+  });
+
+  // Sort
+  document.getElementById('sort-select').addEventListener('change', e => {
+    sortMode = e.target.value; render();
+  });
+
+  // Genre select
+  document.getElementById('genre-select').addEventListener('change', e => {
+    currentGenre = e.target.value; render();
+  });
+
+  // Modal stars
+  document.getElementById('modal-rating').addEventListener('click', e => {
+    const s = e.target.closest('.modal-star');
+    if (!s) return;
+    const v = parseInt(s.dataset.v);
+    modalRating = modalRating === v ? 0 : v;
+    updateModalStars();
+  });
+
+  // Status pills
+  document.getElementById('status-select').addEventListener('click', e => {
+    const pill = e.target.closest('.status-pill');
+    if (!pill) return;
+    modalStatus = pill.dataset.status;
+    updateModalStatus();
+  });
+
+  // Progress inputs
+  ['f-total-eps','f-cur-ep'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateModalProgress);
+  });
+
+  // Cat change → toggle progress section
+  document.getElementById('f-cat').addEventListener('change', updateProgressSection);
+
+  // Add btn
+  document.getElementById('add-btn').addEventListener('click', () => openModal(null));
+
+  // TMDB lookup
+  document.getElementById('tmdb-lookup-btn').addEventListener('click', doTMDBLookup);
+
+  // ── SETTINGS PANEL ──────────────────────────────────────────────
+  function openSettings() {
+    document.getElementById('settings-tmdb-key').value = tmdbApiKey;
+    document.getElementById('settings-github-token').value = githubToken;
+    document.getElementById('settings-gist-id').value = gistId;
+    document.getElementById('settings-overlay').classList.add('open');
+  }
+  function closeSettings() {
+    document.getElementById('settings-overlay').classList.remove('open');
+  }
+
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-close').addEventListener('click', closeSettings);
+  document.getElementById('settings-cancel').addEventListener('click', closeSettings);
+  document.getElementById('settings-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('settings-overlay')) closeSettings();
+  });
+  document.getElementById('settings-save').addEventListener('click', () => {
+    tmdbApiKey = document.getElementById('settings-tmdb-key').value.trim();
+    githubToken = document.getElementById('settings-github-token').value.trim();
+    gistId = document.getElementById('settings-gist-id').value.trim();
+    localStorage.setItem(TMDB_KEY_STORAGE, tmdbApiKey);
+    localStorage.setItem(GITHUB_TOKEN_STORAGE, githubToken);
+    localStorage.setItem(GIST_ID_STORAGE, gistId);
+    closeSettings();
+    toast('Настройки сохранены', 'ok');
+  });
+
+  // Import
+  document.getElementById('import-btn').addEventListener('click', () => {
+    document.getElementById('import-log').classList.remove('show');
+    document.getElementById('import-log').innerHTML = '';
+    document.getElementById('import-confirm').style.display = 'none';
+    document.getElementById('import-file').value = '';
+    importPending = [];
+    document.getElementById('import-overlay').classList.add('open');
+  });
+  document.getElementById('import-close').addEventListener('click', () => document.getElementById('import-overlay').classList.remove('open'));
+  document.getElementById('import-cancel').addEventListener('click', () => document.getElementById('import-overlay').classList.remove('open'));
+  document.getElementById('import-overlay').addEventListener('click', e => { if (e.target===document.getElementById('import-overlay')) document.getElementById('import-overlay').classList.remove('open'); });
+
+  // Export watched JSON
+  document.getElementById('export-btn').addEventListener('click', () => { exportWatched(); });
+
+  // Export for viewing (readonly HTML)
+  document.getElementById('export-view-btn').addEventListener('click', exportForViewing);
+
+  // Refresh all from TMDB
+  document.getElementById('refresh-tmdb-btn').addEventListener('click', refreshAllFromTMDB);
+
+  // Clear DB
+  document.getElementById('clear-db-btn').addEventListener('click', () => {
+    if (!confirm('Удалить ВСЕ данные? Это действие нельзя отменить.')) return;
+    db = [];
+    save();
+    closeSettings();
+    render();
+    toast('База очищена', 'ok');
+  });
+
+  // Gist push
+  document.getElementById('gist-push-btn').addEventListener('click', gistPush);
+  // Gist pull
+  document.getElementById('gist-pull-btn').addEventListener('click', gistPull);
+
+  document.getElementById('import-file').addEventListener('change', e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const parsed = parseImportJSON(ev.target.result);
+      if (!parsed) { document.getElementById('import-log').innerHTML='<div class="err">✗ Неверный JSON</div>'; document.getElementById('import-log').classList.add('show'); return; }
+      processImport(parsed);
+    };
+    reader.readAsText(file);
+  });
+
+  // Drag & drop on import zone
+  const dropZone = document.getElementById('import-drop');
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault(); dropZone.classList.remove('drag');
+    const file = e.dataTransfer.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const parsed = parseImportJSON(ev.target.result);
+      if (!parsed) { document.getElementById('import-log').innerHTML='<div class="err">✗ Неверный JSON</div>'; document.getElementById('import-log').classList.add('show'); return; }
+      processImport(parsed);
+    };
+    reader.readAsText(file);
+  });
+
+  document.getElementById('import-confirm').addEventListener('click', () => {
+    if (!importPending.length) return;
+    db.push(...importPending);
+    save();
+    document.getElementById('import-overlay').classList.remove('open');
+    toast(`Импортировано ${importPending.length} тайтлов`, 'ok');
+    importPending = [];
+    render();
+  });
+
+  // Modal close
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-cancel').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+
+  // Save
+  document.getElementById('modal-save').addEventListener('click', saveItem);
+
+  // Delete
+  document.getElementById('delete-btn').addEventListener('click', deleteItem);
+
+  // Randomizer
+  document.getElementById('rng-btn').addEventListener('click', openRandomizer);
+  document.getElementById('rng-again').addEventListener('click', openRandomizer);
+  document.getElementById('rng-close').addEventListener('click', () => {
+    document.getElementById('rng-overlay').classList.remove('open');
+  });
+  document.getElementById('rng-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('rng-overlay')) {
+      document.getElementById('rng-overlay').classList.remove('open');
+    }
+  });
+
+  // Rewatch modal
+  document.getElementById('rewatch-close').addEventListener('click', () => document.getElementById('rewatch-overlay').classList.remove('open'));
+  document.getElementById('rewatch-done-btn').addEventListener('click', () => document.getElementById('rewatch-overlay').classList.remove('open'));
+  document.getElementById('rewatch-add-btn').addEventListener('click', () => {
+    if (!rewatchItemId) return;
+    const item = db.find(x=>x.id===rewatchItemId);
+    if (!item) return;
+    if (!item.rewatches) item.rewatches = [];
+    item.rewatches.push(Date.now());
+    save();
+    renderRewatchList(item);
+    render();
+    toast('Пересмотр отмечен!', 'ok');
+  });
+  document.getElementById('rewatch-add-nodate-btn').addEventListener('click', () => {
+    if (!rewatchItemId) return;
+    const item = db.find(x=>x.id===rewatchItemId);
+    if (!item) return;
+    if (!item.rewatches) item.rewatches = [];
+    item.rewatches.push(null);
+    save();
+    renderRewatchList(item);
+    render();
+    toast('Пересмотр отмечен!', 'ok');
+  });
+  document.getElementById('rewatch-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('rewatch-overlay')) document.getElementById('rewatch-overlay').classList.remove('open');
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.getElementById('rng-overlay').classList.remove('open');
+      document.getElementById('import-overlay').classList.remove('open');
+      document.getElementById('rewatch-overlay').classList.remove('open');
+      closeSettings();
+    }
+  });
+
+  // Mobile sidebar toggle
+  const mobileToggle = document.getElementById('mobile-status-toggle');
+  const sidebar = document.getElementById('status-sidebar');
+  if (mobileToggle) {
+    // Show toggle only on mobile
+    function checkMobile() {
+      mobileToggle.style.display = window.innerWidth <= 700 ? 'flex' : 'none';
+    }
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    mobileToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      mobileToggle.classList.toggle('open');
+    });
+
+    // Update label when status changes
+    const origSidebarClick = document.getElementById('status-sidebar').onclick;
+    document.getElementById('status-sidebar').addEventListener('click', e => {
+      const btn = e.target.closest('.sidebar-btn');
+      if (!btn) return;
+      const label = btn.childNodes[0].textContent.trim();
+      document.getElementById('mobile-status-label').textContent = 'Статус: ' + label;
+      sidebar.classList.remove('open');
+      mobileToggle.classList.remove('open');
+    });
+  }
+
+  render();
+  // Auto-sync on startup — after everything is initialized
+  setTimeout(autoSyncOnLoad, 1500);
+});
+</script>
+</body>
+</html>
